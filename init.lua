@@ -17,6 +17,14 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "c", "cpp", "h"},
+  callback = function()
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
   pattern = "make",
   callback = function()
     vim.opt_local.expandtab = false
@@ -46,7 +54,7 @@ map('n', '<leader>q', ':quit<CR>')
 map('n', '<leader>w', ':write<CR>')
 map('n', '<leader>S', ':update<CR>:source<CR>')
 map('n', '<leader>rr', ':restart<CR>')
-map('n', '<leader>rf', vim.lsp.buf.format)
+map('n', '<leader>rf', 'gg=G<C-o>')
 map('n', '<leader>rw', '"ayiw:.,$s/a//cg<Left><Left><Left>')
 map('v', '<leader>rs', '"ay:.,$s/a//cg<Left><Left><Left>')
 map('n', "<Esc>", ":noh<CR>", { silent = true })
@@ -68,6 +76,7 @@ vim.pack.add({
   { src = "git@github.com:mason-org/mason.nvim" },
   { src = "git@github.com:williamboman/mason-lspconfig.nvim" },
   { src = "git@github.com:ThePrimeagen/vim-be-good" },
+  { src = "git@github.com:obsidian-nvim/obsidian.nvim" },
 
   -- colorschemes
   { src = "git@github.com:ayu-theme/ayu-vim" },
@@ -98,7 +107,7 @@ map('n', '<leader>ph', ':Pick help<CR>')
 
 -- treesitter
 require "nvim-treesitter.configs".setup({
-  ensure_installed = { "lua", "typst", "cpp" },
+  ensure_installed = { "cpp", "lua", "java", "javascript"},
   sync_install = true,
   auto_install = true,
   ignore_install = {},
@@ -135,7 +144,7 @@ cmp.setup({
 -- lsp manager
 require "mason".setup()
 require "mason-lspconfig".setup({
-  ensure_installed = { "lua_ls", "tinymist", "clangd" },
+  ensure_installed = { "clangd", "lua_ls", "jdtls", "tinymist", "ts_ls" },
   automatic_installation = true,
   automatic_enable = true,
 })
@@ -158,6 +167,22 @@ vim.lsp.config("lua_ls", {
     }
   }
 })
+
+vim.lsp.config("ts_ls", {
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
+  on_attach = function(client)
+    client.server_capabilities.documentFormattingProvider = false
+  end
+})
+
+vim.lsp.config("clangd", {
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
+  cmd = {
+    "clangd",
+    "--fallback-style=none"
+  }
+})
+
 
 -- appearance
 require "colors"
