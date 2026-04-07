@@ -59,6 +59,7 @@ end)
 pcall(function()
     require("rose-pine").setup({
         styles = {
+            bold = false,
             italic = false,
         },
     })
