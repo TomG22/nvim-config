@@ -25,7 +25,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "lua", "svelte", "javascriptreact" },
+  pattern = { "lua", "svelte", "javascript", "javascriptreact", "typescript", "typescriptreact" },
   callback = function()
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
@@ -62,7 +62,9 @@ map('n', '<leader>q', ':quit<CR>')
 map('n', '<leader>w', ':write<CR>')
 map('n', '<leader>S', ':update<CR>:source<CR>')
 map('n', '<leader>rr', ':restart<CR>')
-map('n', '<leader>rf', 'mAgg=G`A', { noremap = true })
+map('n', '<leader>rf', function()
+  vim.lsp.buf.format({ async = false })
+end, { noremap = true })
 map('n', '<leader>rw', '"ayiw:.,$s/a//cg<Left><Left><Left>')
 map('v', '<leader>rs', '"ay:.,$s/a//cg<Left><Left><Left>')
 map('n', "<Esc>", ":noh<CR>", { silent = true })
@@ -148,7 +150,7 @@ map("n", "<leader>fr", function()
 end, { desc = "Recent files (cwd only)" })
 -- treesitter
 require "nvim-treesitter.configs".setup({
-  ensure_installed = { "cpp", "lua", "java", "javascript", "svelte" },
+  ensure_installed = { "cpp", "lua", "java", "javascript", "typescript", "tsx", "svelte" },
   sync_install = true,
   auto_install = true,
   ignore_install = {},
