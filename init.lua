@@ -77,7 +77,6 @@ vim.pack.add({
   { src = "git@github.com:nvim-lua/plenary.nvim" },
   { src = "git@github.com:nvim-telescope/telescope.nvim" },
   { src = "git@github.com:nvim-telescope/telescope-frecency.nvim" },
-  { src = "git@github.com:nvim-treesitter/nvim-treesitter" },
   { src = "git@github.com:hrsh7th/nvim-cmp" },
   { src = "git@github.com:hrsh7th/cmp-nvim-lsp" },
   { src = "git@github.com:hrsh7th/cmp-buffer" },
@@ -148,16 +147,6 @@ map("n", "<leader>fh", builtin.help_tags, { desc = "Help tags" })
 map("n", "<leader>fr", function()
   builtin.oldfiles({ cwd_only = true })
 end, { desc = "Recent files (cwd only)" })
--- treesitter
-require "nvim-treesitter.configs".setup({
-  ensure_installed = { "cpp", "lua", "java", "javascript", "typescript", "tsx", "svelte" },
-  sync_install = true,
-  auto_install = true,
-  ignore_install = {},
-  highlight = { enable = true },
-  indent = { enable = true },
-  modules = {},
-})
 
 -- auto completions
 local cmp = require("cmp")
@@ -224,7 +213,16 @@ vim.lsp.enable("ts_ls")
 -- Clangd
 vim.lsp.config("clangd", {
   capabilities = capabilities,
-  cmd = { "clangd", "--fallback-style=none" },
+  cmd = {
+    "clangd",
+    "--fallback-style=none",
+    "--compile-commands-dir=build-win",
+    "--query-driver=/usr/bin/x86_64-w64-mingw32-g++",
+    "--background-index",
+    "--clang-tidy",
+    "--completion-style=detailed",
+    "--header-insertion=iwyu",
+  },
 })
 vim.lsp.enable("clangd")
 
@@ -290,25 +288,3 @@ end, { desc = "Toggle Zen Mode" })
 map("n", "<leader>cc", function()
   vim.opt.colorcolumn = (#vim.opt.colorcolumn:get() > 0) and {} or { "70" }
 end, { desc = "Toggle colorcolumn" })
-
-local trans = require "trans"
-
-map('n', '<leader>tx', function()
-  trans.toggle_vim_trans()
-end)
-
-map('n', '<leader>tz', function()
-  trans.toggle_all_trans()
-end)
-
-local trans_group = vim.api.nvim_create_augroup("Transparency", { clear = true })
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = trans_group,
-  callback = function()
-    if trans.is_bg_trans then
-      vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-      vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-      vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
-    end
-  end,
-})
